@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Application</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="../public/styles.css"> <!-- Link to external CSS file -->
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>Chat Application</h1>
+    </div>
+    <div id="chatBox" class="chat-box"></div>
+    <div class="chat-input">
+      <input id="messageInput" type="text" placeholder="Type your message here" />
+      <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+    const username = '<%= username %>'; // Access the username from EJS
+
+    // Sending messages
+    document.getElementById('sendButton').onclick = function() {
+      const message = document.getElementById('messageInput').value;
+      if (message.trim() !== "") {
+        socket.emit('sendMessage', `${username}: ${message}`);
+        document.getElementById('messageInput').value = ''; // Clear input
+      }
+    };
+
+    // Receiving messages
+    socket.on('receiveMessage', function(msg) {
+      const chatBox = document.getElementById('chatBox');
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('chat-message');
+      messageElement.textContent = msg;
+      chatBox.appendChild(messageElement);
+      chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
+    });
+  </script>
+</body>
+</html>
+
